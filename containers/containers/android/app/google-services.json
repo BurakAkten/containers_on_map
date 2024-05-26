@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "765501186546",
+    "project_id": "containers-a4afc",
+    "storage_bucket": "containers-a4afc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765501186546:android:f7a25953e5b1037142cb6b",
+        "android_client_info": {
+          "package_name": "com.bakten.containers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSvY99WklUz2jBGD0528LPVno-ZlMynqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
