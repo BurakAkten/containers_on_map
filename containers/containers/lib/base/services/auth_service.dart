@@ -7,29 +7,45 @@ class AuthService {
 
   static AuthService get instance => _instance;
 
-  Future<LoginResponse> login({String? username, String? password}) async {
-    if ([username, password].any((item) => item == null)) return LoginResponse.failure(message: "Error");
+  Future<AuthResponse> login({String? username, String? password}) async {
+    if ([username, password].any((item) => item == null)) return AuthResponse.failure(message: "Error");
 
     try {
       var userDocs = (await FirebaseFirestore.instance.collection("users").where("username", isEqualTo: username).get()).docs;
       var users = User.listFromJson(userDocs.map((d) => d.data()).toList());
       var isUserExist = users.any((user) => user.password == password);
-      return isUserExist ? LoginResponse.success() : LoginResponse.failure();
+      return isUserExist ? AuthResponse.success() : AuthResponse.failure();
     } catch (e) {
-      return LoginResponse.failure(message: e.toString());
+      return AuthResponse.failure(message: e.toString());
+    }
+  }
+
+  Future<AuthResponse> createAccount({String? username, String? password}) async {
+    if ([username, password].any((item) => item == null)) return AuthResponse.failure(message: "Error");
+
+    try {
+      var userDocs = (await FirebaseFirestore.instance.collection("users").where("username", isEqualTo: username).get()).docs;
+      var users = User.listFromJson(userDocs.map((d) => d.data()).toList());
+
+      if (users.isNotEmpty) return AuthResponse.failure(message: "User exist.");
+      var user = {"username": username!, "password": password!};
+      await FirebaseFirestore.instance.collection("users").add(user);
+      return AuthResponse.success();
+    } catch (e) {
+      return AuthResponse.failure(message: e.toString());
     }
   }
 }
 
-class LoginResponse {
+class AuthResponse {
   late bool isSuccess;
   String? errorMessage;
 
-  LoginResponse.success() {
+  AuthResponse.success() {
     isSuccess = true;
   }
 
-  LoginResponse.failure({String message = "There is no such username!"}) {
+  AuthResponse.failure({String message = "There is no such username!"}) {
     isSuccess = false;
     errorMessage = message;
   }

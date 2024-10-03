@@ -3,7 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:provider/provider.dart';
 import '../../../base/constants/app_constants.dart';
 import '../../core_widgets/text_field_widget.dart';
-import '../viewmodels/login_viewmodel.dart';
+import '../viewmodels/auth_viewmodel.dart';
 
 class FormView extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -11,7 +11,7 @@ class FormView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var viewModel = Provider.of<LoginViewModel>(context);
+    var viewModel = Provider.of<AuthViewModel>(context);
     return SingleChildScrollView(
       child: Form(
         key: formKey,
@@ -44,7 +44,7 @@ class FormView extends StatelessWidget {
     );
   }
 
-  InkWell _buildUsernameSuffixIcon(LoginViewModel viewModel) => InkWell(
+  InkWell _buildUsernameSuffixIcon(AuthViewModel viewModel) => InkWell(
         onTap: () {
           if (viewModel.isUserValidated) {
             viewModel.usernameController.text = "";

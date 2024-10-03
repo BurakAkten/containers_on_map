@@ -19,7 +19,7 @@ class App extends StatelessWidget {
       ),
       navigatorKey: NavigationUtil.navigatorKey,
       debugShowCheckedModeBanner: true,
-      initialRoute: NavigationUtil.loginScreen,
+      initialRoute: NavigationUtil.authScreen,
       onGenerateRoute: NavigationUtil.onGenerateRoute,
     );
   }

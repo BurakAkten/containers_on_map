@@ -1,4 +1,4 @@
-import 'package:containers/screens/login/viewmodels/login_viewmodel.dart';
+import 'package:containers/screens/login/viewmodels/auth_viewmodel.dart';
 import 'package:containers/utils/mixins/toast_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -9,16 +9,16 @@ import '../../../utils/navigation_util.dart';
 import '../../core_widgets/bottom_widget.dart';
 import '../../core_widgets/button_widget.dart';
 
-class LoginButtonWidget extends StatefulWidget {
+class AuthButtonWidget extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final bool isConnected;
-  const LoginButtonWidget({super.key, required this.formKey, required this.isConnected});
+  const AuthButtonWidget({super.key, required this.formKey, required this.isConnected});
 
   @override
-  State<LoginButtonWidget> createState() => _LoginButtonWidgetState();
+  State<AuthButtonWidget> createState() => _AuthButtonWidgetState();
 }
 
-class _LoginButtonWidgetState extends State<LoginButtonWidget> with ToastMixin {
+class _AuthButtonWidgetState extends State<AuthButtonWidget> with ToastMixin {
   @override
   void initState() {
     super.initState();
@@ -27,20 +27,20 @@ class _LoginButtonWidgetState extends State<LoginButtonWidget> with ToastMixin {
 
   @override
   Widget build(BuildContext context) {
-    var viewModel = Provider.of<LoginViewModel>(context);
+    var viewModel = Provider.of<AuthViewModel>(context);
     return ButtonWidget(
       isEnabled: viewModel.isButtonEnabled,
-      text: "LOGIN",
+      text: viewModel.isLogin ? "LOGIN" : "SIGN UP",
       onPressed: () async {
         FocusScope.of(context).requestFocus(FocusNode());
         if (!widget.isConnected) {
           _showConnectivityMessage();
           return;
         }
-        var result = await viewModel.login();
+        var result = await viewModel.auth();
         widget.formKey.currentState!.validate();
         if (result.isSuccess && context.mounted) {
-          NavigationUtil.navigateToOperationScreen(context);
+          viewModel.isLogin ? NavigationUtil.navigateToOperationScreen(context) : NavigationUtil.navigateToLoginScreen(context);
         } else {
           showToast(
             child: BottomWidget(title: result.errorMessage ?? "Error", iconColor: AppColors.error, iconData: MdiIcons.alert),

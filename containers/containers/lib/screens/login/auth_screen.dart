@@ -1,24 +1,23 @@
 import 'package:containers/base/constants/app_constants.dart';
-import 'package:containers/screens/login/login_service.dart';
-import 'package:containers/screens/login/viewmodels/login_viewmodel.dart';
+import 'package:containers/screens/login/auth_service.dart';
+import 'package:containers/screens/login/viewmodels/auth_viewmodel.dart';
 import 'package:containers/screens/login/views/form_view.dart';
-import 'package:containers/screens/login/widgets/login_button_widget.dart';
+import 'package:containers/screens/login/widgets/auth_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../utils/connectivity_util.dart';
 import '../../utils/mixins/toast_mixin.dart';
 import '../core_widgets/bottom_widget.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  AuthScreenState createState() => AuthScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> with ToastMixin {
+class AuthScreenState extends State<AuthScreen> with ToastMixin {
   final _formKey = GlobalKey<FormState>();
   late ConnectivityUtil connectivity;
   bool _isConnected = true;
@@ -47,16 +46,16 @@ class LoginScreenState extends State<LoginScreen> with ToastMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChangeNotifierProvider<LoginViewModel>(
-        create: (_) => LoginViewModel(service: LoginService()),
-        child: Consumer<LoginViewModel>(
+      body: ChangeNotifierProvider<AuthViewModel>(
+        create: (_) => AuthViewModel(service: AuthService()),
+        child: Consumer<AuthViewModel>(
           builder: (context, viewModel, child) => _buildScreen(context, viewModel),
         ),
       ),
     );
   }
 
-  Widget _buildScreen(BuildContext context, LoginViewModel viewModel) => Stack(
+  Widget _buildScreen(BuildContext context, AuthViewModel viewModel) => Stack(
         children: [
           IgnorePointer(
             ignoring: viewModel.isLoading,
@@ -67,7 +66,12 @@ class LoginScreenState extends State<LoginScreen> with ToastMixin {
                 children: [
                   Expanded(flex: 2, child: Image.asset("assets/images/logo.png")),
                   Expanded(flex: 3, child: FormView(formKey: _formKey)),
-                  LoginButtonWidget(formKey: _formKey, isConnected: _isConnected),
+                  AuthButtonWidget(formKey: _formKey, isConnected: _isConnected),
+                  const SizedBox(height: AppSpacing.spacingSmall),
+                  InkWell(
+                    onTap: () => viewModel.changeAuthType(),
+                    child: Text(viewModel.isLogin ? "Create Account" : "Login", style: AppFontUtils.filledInputLabel),
+                  )
                 ],
               ),
             ),
