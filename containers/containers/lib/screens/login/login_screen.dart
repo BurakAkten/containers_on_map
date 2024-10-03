@@ -65,7 +65,7 @@ class LoginScreenState extends State<LoginScreen> with ToastMixin {
               padding: const EdgeInsets.all(AppSpacing.spacingLarge),
               child: Column(
                 children: [
-                  Expanded(flex: 2, child: SvgPicture.asset("assets/images/logo.svg")),
+                  Expanded(flex: 2, child: Image.asset("assets/images/logo.png")),
                   Expanded(flex: 3, child: FormView(formKey: _formKey)),
                   LoginButtonWidget(formKey: _formKey, isConnected: _isConnected),
                 ],
