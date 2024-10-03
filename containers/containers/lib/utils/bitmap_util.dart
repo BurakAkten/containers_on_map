@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class BitmapUtil {
   ///https://medium.com/@m1nori/marker-icon-from-svg-image-flutter-2024-875d9bec69b9
-  static Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(String assetName, [Size size = const Size(50, 60)]) async {
+  static Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(String assetName, [Size size = const Size(15, 30)]) async {
     final pictureInfo = await vg.loadPicture(SvgAssetLoader(assetName), null);
 
     double devicePixelRatio = ui.PlatformDispatcher.instance.views.first.devicePixelRatio;
@@ -29,6 +29,6 @@ class BitmapUtil {
     final image = rasterPicture.toImageSync(width, height);
     final bytes = (await image.toByteData(format: ui.ImageByteFormat.png))!;
 
-    return BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+    return BitmapDescriptor.bytes(bytes.buffer.asUint8List());
   }
 }
