@@ -27,7 +27,7 @@ class ContainersScreen extends StatelessWidget {
           children: [
             GoogleMap(
               mapType: MapType.normal,
-              initialCameraPosition: CameraPosition(target: viewModel.initialPosition, zoom: 12),
+              initialCameraPosition: CameraPosition(target: viewModel.initialPosition, zoom: viewModel.defaultZoomLevel),
               onMapCreated: (GoogleMapController controller) async {
                 if (!viewModel.controller.isCompleted) {
                   viewModel.controller.complete(controller);

@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:ui';
 import 'package:collection/collection.dart';
+import 'package:containers/base/constants/app_constants.dart';
 import 'package:containers/domain/dtos/container.dart';
+import 'package:containers/utils/extensions/location_extension.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_project_base/flutter_project_base.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,9 +13,11 @@ import '../../../utils/bitmap_util.dart';
 class ContainersViewModel extends BaseViewModel {
   final DatabaseReference _databaseReference = FirebaseDatabase.instance.ref().child("containers");
   final int maxMarkerCountOnScreen = 50;
+  final double defaultZoomLevel = 14, clusterZoomLevel = 13, maxZoomLevel = 4;
+  double currentZoomLevel = 14;
 
   Completer<GoogleMapController> controller = Completer();
-  final Set<Marker> _visibleMarkers = <Marker>{}, _allMarkers = <Marker>{};
+  final Set<Marker> _visibleMarkers = <Marker>{}, _allMarkers = <Marker>{}, _cluster = <Marker>{};
 
   List<ContainerInfo> _containers = [];
   ContainerInfo? _selectedContainer;
@@ -78,26 +84,64 @@ class ContainersViewModel extends BaseViewModel {
   }
 
   FutureOr<void> onCameraPositionChange() async {
-    isLoading = true;
-    if (_allMarkers.length >= maxMarkerCountOnScreen) {
-      var visibleRegion = await (await controller.future).getVisibleRegion();
-      var markers = _allMarkers.where((element) => visibleRegion.contains(element.position)).toList();
-      if (markers.length >= maxMarkerCountOnScreen) markers = markers.getRange(0, maxMarkerCountOnScreen).toList();
-      _visibleMarkers.clear();
-      for (var element in markers) {
-        _visibleMarkers.add(element);
-      }
+    var controllerValue = await controller.future;
+    var zoomLevel = await controllerValue.getZoomLevel();
+    if (zoomLevel < clusterZoomLevel) {
+      currentZoomLevel = zoomLevel;
+      await _setClusters(controllerValue, zoomLevel);
+      await _setVisibleMarkers(_cluster, controllerValue);
+    } else if (_allMarkers.length >= maxMarkerCountOnScreen) {
+      await _setVisibleMarkers(_allMarkers, controllerValue);
     } else {
       for (var element in _allMarkers) {
         _visibleMarkers.add(element);
       }
     }
-    isLoading = false;
-
     if (selectedContainer != null) {
       markerOnTap(selectedContainer);
     }
     reloadState();
+  }
+
+  Future<void> _setClusters(GoogleMapController controllerValue, double zoomLevel) async {
+    _cluster.clear();
+    if (zoomLevel <= maxZoomLevel) {
+      var latitude = (_allMarkers.map((e) => e.position.latitude).reduce((value, element) => value + element) / _allMarkers.length);
+      var longitude = (_allMarkers.map((e) => e.position.longitude).reduce((value, element) => value + element) / _allMarkers.length);
+      final Marker marker = Marker(
+        markerId: const MarkerId("all"),
+        position: LatLng(latitude, longitude),
+        icon: await BitmapUtil.getClusterMarkerCanvas(_allMarkers.length, AppColors.green),
+      );
+      _cluster.add(marker);
+      return;
+    }
+
+    var visibleRegion = await controllerValue.getVisibleRegion();
+    var filteredMarkers = _allMarkers.where((element) => visibleRegion.contains(element.position)).toList();
+    var clusters = (filteredMarkers.map((c) => c.position).toList()).clusteredLocations(6);
+    for (int i = 0; i < clusters.length; i++) {
+      Color markerColor = Color.fromARGB(255, Random().nextInt(256), Random().nextInt(256), Random().nextInt(256));
+      var cluster = clusters[i];
+      var latitude = (cluster.map((e) => e.latitude).reduce((value, element) => value + element) / cluster.length);
+      var longitude = (cluster.map((e) => e.longitude).reduce((value, element) => value + element) / cluster.length);
+      final Marker marker = Marker(
+        markerId: MarkerId(cluster.toString()),
+        position: LatLng(latitude, longitude),
+        icon: await BitmapUtil.getClusterMarkerCanvas(cluster.length, markerColor),
+      );
+      _cluster.add(marker);
+    }
+  }
+
+  Future<void> _setVisibleMarkers(Set<Marker> markers, GoogleMapController controller) async {
+    var visibleRegion = await controller.getVisibleRegion();
+    var filteredMarkers = markers.where((element) => visibleRegion.contains(element.position)).toList();
+    if (filteredMarkers.length >= maxMarkerCountOnScreen) filteredMarkers = filteredMarkers.getRange(0, maxMarkerCountOnScreen).toList();
+    _visibleMarkers.clear();
+    for (var element in filteredMarkers) {
+      _visibleMarkers.add(element);
+    }
   }
 
   Future<void> navigateToSelected() async {
