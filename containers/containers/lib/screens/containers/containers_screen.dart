@@ -1,8 +1,8 @@
 import 'package:containers/base/constants/app_constants.dart';
+import 'package:containers/screens/containers/viewmodels/containers_viewmodel.dart';
+import 'package:containers/screens/containers/widgets/container_information_widget.dart';
+import 'package:containers/screens/containers/widgets/container_relocate_widget.dart';
 import 'package:containers/screens/core_widgets/bottom_widget.dart';
-import 'package:containers/screens/operation/viewmodels/containers_viewmodel.dart';
-import 'package:containers/screens/operation/widgets/container_information_widget.dart';
-import 'package:containers/screens/operation/widgets/container_relocate_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_base/flutter_project_base.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,7 +27,8 @@ class ContainersScreen extends StatelessWidget {
           children: [
             GoogleMap(
               mapType: MapType.normal,
-              initialCameraPosition: CameraPosition(target: viewModel.initialPosition, zoom: viewModel.defaultZoomLevel),
+              initialCameraPosition:
+                  CameraPosition(target: viewModel.initialPosition, zoom: viewModel.defaultZoomLevel),
               onMapCreated: (GoogleMapController controller) async {
                 if (!viewModel.controller.isCompleted) {
                   viewModel.controller.complete(controller);

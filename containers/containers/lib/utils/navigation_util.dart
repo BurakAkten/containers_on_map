@@ -1,6 +1,7 @@
 import 'package:containers/screens/login/auth_screen.dart';
-import 'package:containers/screens/operation/containers_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../screens/containers/containers_screen.dart';
 
 class NavigationUtil {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -18,8 +19,8 @@ class NavigationUtil {
   static navigateToLoginScreen(context) => _navigateToPageAndRemoveUntil(context, authScreen);
   static navigateToOperationScreen(context) => _navigateToPageAndRemoveUntil(context, operationScreen);
 
-  static Route onGenerateRoute(settings) =>
-      MaterialPageRoute(builder: (context) => _buildNavigationMap(context, settings), settings: RouteSettings(name: settings.name));
+  static Route onGenerateRoute(settings) => MaterialPageRoute(
+      builder: (context) => _buildNavigationMap(context, settings), settings: RouteSettings(name: settings.name));
 
   static _buildNavigationMap(context, settings) {
     switch (settings.name) {

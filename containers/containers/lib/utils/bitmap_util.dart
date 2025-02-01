@@ -7,7 +7,8 @@ import 'dart:async';
 import 'dart:typed_data';
 
 class BitmapUtil {
-  static Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(String assetName, [Size size = const Size(15, 30)]) async {
+  static Future<BitmapDescriptor> bitmapDescriptorFromSvgAsset(String assetName,
+      [Size size = const Size(15, 30)]) async {
     ///https://medium.com/@m1nori/marker-icon-from-svg-image-flutter-2024-875d9bec69b9
     final pictureInfo = await vg.loadPicture(SvgAssetLoader(assetName), null);
 
@@ -34,16 +35,21 @@ class BitmapUtil {
     return BitmapDescriptor.bytes(bytes.buffer.asUint8List());
   }
 
-  static Future<BitmapDescriptor> getClusterMarkerCanvas(int? count, Color color, [Size size = const Size(40, 40)]) async {
+  static Future<BitmapDescriptor> getClusterMarkerCanvas(int? count, Color color,
+      [Size size = const Size(40, 40)]) async {
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
     final Canvas canvas = Canvas(pictureRecorder);
     final Paint paint = Paint()..color = color;
 
-    canvas.drawRect(ui.Rect.fromLTRB(0, 0, size.width, size.height), paint..color = color.withOpacity(0.5));
-    canvas.drawRect(ui.Rect.fromLTRB(size.width / 10, size.height / 10, size.width - (size.width / 10), size.height - (size.height / 10)), paint);
+    canvas.drawRect(ui.Rect.fromLTRB(0, 0, size.width, size.height), paint..color = color.withValues(alpha: 0.5));
+    canvas.drawRect(
+        ui.Rect.fromLTRB(
+            size.width / 10, size.height / 10, size.width - (size.width / 10), size.height - (size.height / 10)),
+        paint);
 
     TextPainter textPainter = TextPainter(
-      text: TextSpan(text: "$count", style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+      text: TextSpan(
+          text: "$count", style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     );

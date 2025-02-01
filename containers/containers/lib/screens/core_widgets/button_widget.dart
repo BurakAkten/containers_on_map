@@ -23,8 +23,7 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bgColor =
-        !isEnabled ? backgroundColor.withOpacity(0.1) : backgroundColor;
+    var bgColor = !isEnabled ? backgroundColor.withValues(alpha: 0.1) : backgroundColor;
     return Material(
       color: bgColor,
       borderRadius: BorderRadius.circular(AppRadius.small),
@@ -32,14 +31,11 @@ class ButtonWidget extends StatelessWidget {
         onTap: isEnabled ? onPressed : () {},
         borderRadius: BorderRadius.circular(AppRadius.small),
         child: Container(
-          decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(AppRadius.small)),
+          decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(AppRadius.small)),
           height: height,
           width: width,
           alignment: Alignment.center,
-          padding:
-              const EdgeInsets.symmetric(vertical: AppSpacing.spacingXSmall),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.spacingXSmall),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
